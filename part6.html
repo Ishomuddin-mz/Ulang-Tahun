@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Sayang Ku</title>
+    <style>
+        /* --- CSS UTAMA --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffebee; /* Pink lembut */
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* --- LOADING SCREEN --- */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #ff4081;
+            border-top: 5px solid transparent;
+            border-radius: 50%;
+            animation: putar-loading 1s linear infinite;
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            color: #d81b60;
+            font-weight: bold;
+            font-size: 1.2rem;
+            animation: kedip 1s infinite;
+        }
+
+        /* --- BAGIAN KADO --- */
+        #halaman-kado {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .icon-kado {
+            font-size: 150px;
+            cursor: pointer;
+            /* Transisi halus saat mengecil */
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            user-select: none;
+            display: inline-block;
+        }
+        
+        /* Animasi Goyang Standar */
+        .goyang {
+            animation: goyang 2s infinite;
+        }
+
+        .petunjuk {
+            color: #880e4f;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        /* --- BAGIAN KUE --- */
+        #halaman-kue {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffebee;
+            z-index: 90;
+        }
+
+        .kue-container {
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .kue-img {
+            width: 280px;
+            height: auto;
+            border-radius: 15px;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.2));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .teks-kue {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            color: #d81b60;
+            font-weight: bold;
+            animation: kedip 1.5s infinite;
+        }
+
+        /* --- BAGIAN SURAT & FOTO --- */
+        #halaman-konten {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #fff0f6 0%, #ffebee 100%); 
+        }
+
+        .card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            border: 4px solid #f8bbd0;
+            text-align: center;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Animasi Muncul Teks (Fade In Up) */
+        .animasi-muncul {
+            animation: fadeInUp 1.5s ease-out forwards;
+            opacity: 0; /* Mulai dari transparan */
+        }
+
+        .card h1 { color: #c2185b; font-size: 1.8rem; margin: 10px 0; }
+        .card h2 { color: #ec407a; font-size: 1.1rem; margin-bottom: 15px; font-weight: normal; }
+
+        /* BINGKAI FOTO BULAT SEMPURNA */
+        .photo-frame {
+            /* Kunci ukuran agar bulat sempurna */
+            width: 180px;
+            height: 180px; 
+            margin: 0 auto 15px;
+            border-radius: 50%; /* Membuat lingkaran */
+            overflow: hidden;
+            border: 5px solid #ff4081;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+            background-color: #ddd; /* Warna dasar jika foto loading */
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Agar foto mengisi lingkaran tanpa gepeng */
+            transition: opacity 0.5s ease-in-out; /* Efek halus saat ganti foto */
+        }
+
+        .surat-cinta {
+            text-align: justify;
+            color: #444;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #fffafc;
+            border-radius: 10px;
+            border: 1px dashed #ff80ab;
+            flex-grow: 1;
+        }
+
+        .footer-surat {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #d81b60;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+
+        /* --- KEYFRAMES ANIMASI --- */
+        @keyframes putar-loading { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes goyang { 0% { transform: rotate(0deg); } 25% { transform: rotate(10deg); } 50% { transform: rotate(0deg); } 75% { transform: rotate(-10deg); } 100% { transform: rotate(0deg); } }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        @keyframes kedip { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        /* Animasi Fade In Up (Muncul dari bawah) */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <audio id="sound-klik">
+        <source src="klik.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="musik-utama" loop>
+        <source src="musik.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text" id="loading-message">Memuat...</div>
+    </div>
+
+    <div id="halaman-kado">
+        <div class="icon-kado goyang" onclick="prosesKado()" id="gambarKado">🎁</div>
+        <div class="petunjuk" id="teksKado">Ketuk kadonya, Sayang!</div>
+    </div>
+
+    <div id="halaman-kue" onclick="bukaKue()">
+        <div class="kue-container">
+            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=1089&auto=format&fit=crop" alt="Kue Ulang Tahun" class="kue-img">
+            <div class="teks-kue">Tiup lilinnya & Potong kuenya! 🎂<br><span style="font-size:0.7em; font-weight:normal; color:#888">(Klik Kuenya)</span></div>
+        </div>
+    </div>
+
+    <div id="halaman-konten">
+        <div class="card" id="kartu-ucapan">
+            <h1>🎉 Selamat Ulang Tahun!</h1>
+            <h2>Asma Alifta Arsianti (21 Tahun)</h2>
+            
+            <div class="photo-frame">
+                <img id="foto-asma" src="foto1.jpg" alt="Foto Asma">
+            </div>
+
+            <div class="surat-cinta">
+                <p><strong>Sayangku,</strong></p>
+                <p>Di hari yang sangat istimewa ini, mas ingin sayang tahu betapa berharganya kehadiran sayang dalam setiap detak waktu yang mas lalui. Sayang bukan hanya seseorang yang hadir, tapi sayang adalah alasan mengapa setiap hari terasa lebih bermakna, lebih hangat, dan lebih indah. Terima kasih sudah menemani setiap langkahnya mas, mengisi hari-harinya mas dengan tawa yang tulus, cerita yang tak pernah membosankan, dan kebahagiaan sederhana yang selalu membuat mas merasa beruntung memiliki sayang.</p>
+                <p>Mas berdoa dengan sepenuh hati agar setiap doa baik sayang dikabulkan oleh Allah Yang Maha Kuasa. Semoga kesehatan selalu menyelimuti sayang, kebahagiaan yang tulus selalu menemani sayang, dan semua mimpi-mimpi indah sayang satu per satu menjadi kenyataan. Semoga setiap langkah sayang dipenuhi dengan berkah, setiap usaha sayang membuahkan hasil yang manis, dan setiap harapan sayang terwujud dengan cara yang paling indah. Jika suatu hari nanti sayang merasa lelah, ingatlah bahwa sayang selalu punya satu tempat yang aman untuk pulang: pelukan hangat ini dan hati yang akan selalu terbuka untuk sayang.</p>
+                <p>Mas ingin sayang tahu bahwa kehadiran sayang dalam hidupnya mas adalah anugerah terindah yang pernah mas terima. Setiap momen bersama sayang adalah kenangan berharga yang akan selalu mas simpan di sudut terdalam hatinya mas. Sayang mengajarkan mas arti cinta yang sesungguhnya, kesabaran, dan kebahagiaan yang tulus. Terima kasih sudah menjadi cahaya di hari-hari gelap mas, menjadi kekuatan saat mas lemah, dan menjadi alasan untuk terus tersenyum setiap hari.</p>
+                <p>Selamat ulang tahun, cintaku. Semoga Allah SWT selalu menjaga setiap langkah sayang, melindungi sayang dari segala hal buruk, mengabulkan setiap doa baik sayang, dan memberikan sayang kebahagiaan yang berlimpah. Semoga kita selalu diberi kekuatan untuk terus berjalan berdampingan, saling mendukung, saling menyayangi, dan terus membangun kenangan indah bersama hingga akhir waktu. Mas berjanji akan selalu ada untuk sayang, dalam suka maupun duka, dalam tawa maupun air mata.</p>
+
+                <p class="footer-surat">
+                    Dengan seluruh cinta, kasih sayang, dan doa terbaik,<br>
+                    Untuk orang yang paling berarti dalam hidupnya mas.<br>
+                    Love You Sayang........ ❤️
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA FOTO ---
+        // Pastikan nama file ini sesuai dengan yang ada di foldermu
+        const daftarFoto = ["foto1.jpg", "foto2.jpg", "foto3.jpg"];
+        let indexFoto = 0;
+
+        // --- VARIABEL ---
+        let tahap = 0;
+        const sfx = document.getElementById('sound-klik');
+        const lagu = document.getElementById('musik-utama');
+        
+        const loading = document.getElementById('loading-overlay');
+        const msg = document.getElementById('loading-message');
+        
+        const kado = document.getElementById('gambarKado');
+        const txtKado = document.getElementById('teksKado');
+        
+        const pKado = document.getElementById('halaman-kado');
+        const pKue = document.getElementById('halaman-kue');
+        const pKonten = document.getElementById('halaman-konten');
+        const kartu = document.getElementById('kartu-ucapan');
+        const imgFoto = document.getElementById('foto-asma');
+
+        const pesanLoad = ["Sabar ya, Sayang...", "Sebentar, Mas hias dulu...", "Dikit lagi cantik..."];
+
+        // --- FUNGSI KADO ---
+        function prosesKado() {
+            // Mainkan SFX
+            sfx.currentTime = 0; 
+            sfx.play().catch(e => console.log("Perlu interaksi"));
+
+            // Tampilkan Loading
+            loading.style.display = 'flex';
+            msg.innerText = pesanLoad[tahap];
+
+            setTimeout(() => {
+                loading.style.display = 'none';
+                tahap++;
+                aksiKadoMengecil();
+            }, 2000); 
+        }
+
+        function aksiKadoMengecil() {
+            if (tahap === 1) {
+                // Tahap 1: Mengecil jadi 75%
+                kado.style.transform = "scale(0.75)";
+                txtKado.innerText = "Lagi dong sayang, kliknya...";
+            } else if (tahap === 2) {
+                // Tahap 2: Mengecil jadi 50%
+                kado.style.transform = "scale(0.50)";
+                txtKado.innerText = "Sekali lagi, Bismillah...";
+            } else if (tahap === 3) {
+                // Tahap 3: Selesai, pindah ke Kue
+                pKado.style.display = 'none';
+                pKue.style.display = 'flex';
+            }
+        }
+
+        // --- FUNGSI KUE & MUNCUL TEKS ---
+        function bukaKue() {
+            lagu.play().catch(e => console.log("Gagal putar lagu"));
+            
+            pKue.style.display = 'none';
+            pKonten.style.display = 'flex'; // Tampilkan container
+            
+            // Tambahkan class animasi agar teks muncul perlahan (Fade-In Up)
+            kartu.classList.add('animasi-muncul');
+            
+            // Jalankan slidehsow foto
+            putarFotoOtomatis();
+        }
+
+        // --- FUNGSI SLIDESHOW FOTO ---
+        function putarFotoOtomatis() {
+            setInterval(() => {
+                // Efek fade-out sebentar sebelum ganti
+                imgFoto.style.opacity = '0';
+                
+                setTimeout(() => {
+                    indexFoto++;
+                    if (indexFoto >= daftarFoto.length) indexFoto = 0;
+                    
+                    // Ganti source gambar
+                    imgFoto.src = daftarFoto[indexFoto];
+                    
+                    // Kembalikan opacity (fade-in)
+                    imgFoto.style.opacity = '1';
+                }, 500); // Tunggu 0.5 detik saat transparan baru ganti
+                
+            }, 3000); // Ganti setiap 3 detik
+        }
+
+    </script>
+</body>
+</html>
